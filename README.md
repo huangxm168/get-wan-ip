@@ -2,6 +2,19 @@
 
 适用于 ImmortalWrt / OpenWrt 23.x 的 WAN 口 IP 地址查询脚本，以 JSON 格式输出当前路由器的公网 IP 信息。
 
+## 快速安装
+
+在 OpenWrt 路由器中执行以下命令即可下载或更新脚本：
+
+```bash
+wget -O /www/cgi-bin/get_wan_ip.sh https://raw.githubusercontent.com/huangxm168/get-wan-ip/refs/heads/main/get_wan_ip.sh && chmod +x /www/cgi-bin/get_wan_ip.sh
+```
+
+该命令会：
+- 下载最新版本的脚本到 `/www/cgi-bin/get_wan_ip.sh`
+- 自动覆盖旧版本（如果存在）
+- 赋予脚本执行权限
+
 ## 功能特性
 
 - **双协议栈支持**：同时查询 IPv4 和 IPv6 地址
@@ -158,5 +171,6 @@ curl http://192.168.1.1/cgi-bin/get_wan_ip.sh
 
 - 使用 `ubus` 查询网络接口状态
 - 使用 `jsonfilter` 解析 JSON 数据
+- IP 地址格式校验（排除非标准格式和链路本地地址）
 - 兼容 BusyBox 环境的毫秒级时间戳获取
 - 符合 CGI 规范的 HTTP 响应头设置

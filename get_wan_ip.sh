@@ -44,6 +44,18 @@ ERROR=""
 # 工具函数：查询接口状态
 # ==============================
 
+# 校验 IPv4 地址格式
+is_valid_ipv4() {
+  echo "$1" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+}
+
+# 校验 IPv6 地址格式（简化版，排除带作用域标识的地址）
+is_valid_ipv6() {
+  # 匹配标准 IPv6 格式，排除包含 % 的链路本地地址
+  echo "$1" | grep -Eq '^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$' && \
+  ! echo "$1" | grep -q '%'
+}
+
 # 查询 IPv4 地址
 query_iface_ipv4() {
   ubus call "network.interface.$1" status 2>/dev/null \
@@ -70,6 +82,16 @@ WAN_IPV6="$(query_iface_ipv6 wan)"
 IFACE_UP="$(query_iface_up wan)"
 IFACE_USED="wan"
 
+# 校验 IPv4 格式，不符合则清空
+if [ -n "$WAN_IPV4" ] && ! is_valid_ipv4 "$WAN_IPV4"; then
+  WAN_IPV4=""
+fi
+
+# 校验 IPv6 格式，不符合则清空
+if [ -n "$WAN_IPV6" ] && ! is_valid_ipv6 "$WAN_IPV6"; then
+  WAN_IPV6=""
+fi
+
 # ==============================
 # 2. 若 wan 无任何 IP，则回退到 pppoe-wan
 # ==============================
@@ -78,6 +100,16 @@ if [ -z "$WAN_IPV4" ] && [ -z "$WAN_IPV6" ]; then
   WAN_IPV6="$(query_iface_ipv6 pppoe-wan)"
   IFACE_UP="$(query_iface_up pppoe-wan)"
   IFACE_USED="pppoe-wan"
+
+  # 校验 IPv4 格式，不符合则清空
+  if [ -n "$WAN_IPV4" ] && ! is_valid_ipv4 "$WAN_IPV4"; then
+    WAN_IPV4=""
+  fi
+
+  # 校验 IPv6 格式，不符合则清空
+  if [ -n "$WAN_IPV6" ] && ! is_valid_ipv6 "$WAN_IPV6"; then
+    WAN_IPV6=""
+  fi
 fi
 
 # ==============================
