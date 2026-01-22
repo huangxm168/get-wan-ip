@@ -27,7 +27,20 @@ wget -O /www/cgi-bin/get_wan_ip.sh https://raw.githubusercontent.com/huangxm168/
 ## 系统要求
 
 - ImmortalWrt 或 OpenWrt 23.x 及以上版本
-- 依赖工具：`ubus`、`jsonfilter`（通常已预装）
+- 依赖工具：
+  - `ubus`、`jsonfilter`（通常已预装）
+  - `coreutils-date`（用于生成精确的毫秒级时间戳，需手动安装）
+
+### 安装依赖
+
+在 OpenWrt 路由器上执行以下命令安装 `coreutils-date`：
+
+```bash
+opkg update
+opkg install coreutils-date
+```
+
+安装后，系统会自动将 `/bin/date` 链接到 `/usr/libexec/date-coreutils`，脚本即可使用 `date +%s%3N` 生成毫秒级时间戳。
 
 ## 使用方法
 
@@ -172,5 +185,5 @@ curl http://192.168.1.1/cgi-bin/get_wan_ip.sh
 - 使用 `ubus` 查询网络接口状态
 - 使用 `jsonfilter` 解析 JSON 数据
 - IP 地址格式校验（排除非标准格式和链路本地地址）
-- 兼容 BusyBox 环境的毫秒级时间戳获取
+- 使用 `coreutils-date` 提供的 `date +%s%3N` 命令生成精确的毫秒级 Unix 时间戳
 - 符合 CGI 规范的 HTTP 响应头设置

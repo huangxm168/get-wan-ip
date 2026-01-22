@@ -12,15 +12,9 @@ echo "Cache-Control: no-store"
 echo ""
 
 # ==============================
-# 获取毫秒级 Unix 时间戳（BusyBox 兼容）
+# 获取毫秒级 Unix 时间戳（额外安装并使用 coreutils-date）
 # ==============================
-get_unix_ms() {
-  now_s="$(date +%s)"
-  uptime_frac="$(cut -d. -f2 /proc/uptime | cut -c1-3)"
-  echo "${now_s}${uptime_frac}"
-}
-
-QUERIED_AT="$(get_unix_ms)"
+QUERIED_AT="$(date +%s%3N)"
 
 # ==============================
 # 通用字段初始化
